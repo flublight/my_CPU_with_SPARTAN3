@@ -44,18 +44,19 @@ end
 
 wire[4:0] pr=zr[15:11];
 wire[4:0] sb=pr-{1'b0,dr};
-wire      pq=~sb[8];
+wire      pq=~sb[4];
 wire[3:0] mx=(sb[4])?pr[3:0]:sb[3:0];
 wire[15:0] zw={mx,zr[10:0],pq};      
-
+wire[15:0]tmp={8'b00000000,z};
 assign p=zr[7:0];
 assign q=zr[11:8];
-always@(posedge clk or negedge rst) begin
+always@(posedge clk) begin
     if(start)begin
-     zr<={8'h00,z};
-     dr<=d;
+      dr<=d;
+      zr<=tmp;
     end
     else if(en_seq)zr <=zw;
+    
 end
 
 endmodule
