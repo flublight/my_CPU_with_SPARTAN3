@@ -26,7 +26,6 @@ module Sim;
   reg[1:0] led;
   reg[7:0] Lseg1,Lseg2;
   parameter Clk_CYCLE = 10;
-
  my_Peocessing_System_top test
    (
    Clk,

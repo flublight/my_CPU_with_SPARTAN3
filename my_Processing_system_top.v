@@ -59,9 +59,15 @@ reg start;
 wire[3:0]q_7seg,r_7seg;
 
 always@(posedge INCLK or negedge RST)begin
-  past_sec<=cnt_sec;
-  if(past_sec!=cnt_sec||~RST)start<=1;
-  else start<=0;
+  if(~RST)begin
+    past_sec<=0;
+    start<=0;
+  end
+  else if(past_sec!=cnt_sec)start<=1;
+  else begin
+    start<=0;
+    past_sec<=cnt_sec;
+  end
 end
 wire [7:0]devidend={2'b00,cnt_sec};
 dev devFor7seg(8'b10110110,4'b1010,start,INCLK,RST,q_seg,r_seg);

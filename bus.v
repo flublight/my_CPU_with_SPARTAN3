@@ -19,11 +19,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 
-`define WORD = 32  // 1word
-`define WORD_ADDR_W = 30  // address width 1word
+`define WORD 32  // 1word
+`define WORD_ADDR_W 30  // address width 1word
 
-`define WORD_MSB =WORD-1
-`define WORD_ADDR_MSB =WORD_ADDR_W-1;
+`define WORD_MSB `WORD-1
+`define WORD_ADDR_MSB `WORD_ADDR_W-1
 
 module bus_slave_mux(
 input[7:0]s_cs,
@@ -37,8 +37,8 @@ input[`WORD_MSB:0]s5_data,
 input[`WORD_MSB:0]s6_data,
 input[`WORD_MSB:0]s7_data,
 
-output[`WORD_MSB:0] m_data,
-output m_rdy
+output reg [`WORD_MSB:0] m_data,
+output reg m_rdy
 );
 always@(*)begin
   if(s_cs[0]==1)begin
@@ -76,9 +76,9 @@ always@(*)begin
 end
 
 endmodule
-module bus_addr_decodor(
+module bus_addr_decoder(
     input[`WORD_ADDR_MSB:0]s_addr,
-    output[7:0] s_sc
+    output reg[7:0] s_cs
     );
     wire[2:0]s_index=s_addr[`WORD_ADDR_MSB:`WORD_ADDR_MSB-2];
 
@@ -96,11 +96,11 @@ module bus_addr_decodor(
           endcase
     end
 
-endmodule;
+endmodule
 
 module bus_master_mux(
     input[3:0]grnt,
-    input[3:0]as,
+    input[3:0]m_as,
     input[3:0]rw,
 
     input[`WORD_MSB:0]m0_data,
@@ -112,59 +112,47 @@ module bus_master_mux(
     input[`WORD_MSB:0]m3_data,
     input[`WORD_ADDR_MSB:0]m3_addr,
 
-    output[`WORD_MSB:0]s_data,
-    output[`WORD_ADDR_MSB:0]s_addr,
-    output s_rw,
-    output s_as
+    output reg[`WORD_MSB:0]s_wr_data,
+    output reg[`WORD_ADDR_MSB:0]s_addr,
+    output reg s_rw,
+    output reg s_as
     );
     always@(*)begin
 
     if(grnt[0]==1)begin
-      s_data=m0_data;
+      s_wr_data=m0_data;
       s_addr=m0_addr;
-      s_rw=m0_rw;
-      s_as=m0_as;
+      s_rw=rw[0];
+      s_as=m_as[0];
     end
     if(grnt[1]==1)begin
-      s_data=m1_data;
+      s_wr_data=m1_data;
       s_addr=m1_addr;
-      s_rw=m1_rw;
-      s_as=m1_as;
+      s_rw=rw[1];
+      s_as=m_as[1];
     end
     if(grnt[2]==1)begin
-      s_data=m2_data;
+      s_wr_data=m2_data;
       s_addr=m2_addr;
-      s_rw=m2_rw;
-      s_as=m2_as;
+      s_rw=rw[2];
+      s_as=m_as[2];
+
     end
     if(grnt[3]==1)begin
-      s_data=m3_data;
+      s_wr_data=m3_data;
       s_addr=m3_addr;
-      s_rw=m3_rw;
-      s_as=m3_as;
+      s_rw=rw[3];
+      s_as=m_as[3];
     end
     end
 endmodule
-
-module bus(
+module bus_arbiter(
     input clk,
-    input rst
-    );
-    reg[3:0] grnt,req,chip,addrstr,rw,rdy;
-    reg[1:0] owner;
-    reg [`WORD_MSB:0]w_data,r_data;
-    reg[`WORD_ADDR_MSB:0] addr;
-
-    //bus syoyuuken
-    always@(*)begin
-          grnt=0;
-          case (owner)
-          0:grnt[0]=1;
-          1:grnt[1]=1;
-          2:grnt[2]=1;
-          3:grnt[3]=1;
-          endcase
-    end
+    input rst,
+    input[3:0]req,
+    output reg [3:0]grnt
+  );
+    reg [1:0] owner;
 
     //bus arbitor
     always@(posedge clk or negedge rst)begin
@@ -202,4 +190,108 @@ module bus(
         endcase
       end
     end
+  //bus syoyuuken
+  always@(*)begin
+        grnt=0;
+        case (owner)
+        0:grnt[0]=1;
+        1:grnt[1]=1;
+        2:grnt[2]=1;
+        3:grnt[3]=1;
+        endcase
+  end
+endmodule
+module bus(
+    input clk,
+    input rst,
+    input[3:0]req,
+    input[3:0]m_as,
+    input [`WORD_MSB:0]m0_rw_data,
+    input [`WORD_ADDR_MSB:0]m0_addr,
+    input [`WORD_MSB:0]m1_rw_data,
+    input [`WORD_ADDR_MSB:0]m1_addr,
+    input [`WORD_MSB:0]m2_rw_data,
+    input [`WORD_ADDR_MSB:0]m2_addr,
+    input [`WORD_MSB:0]m3_rw_data,
+    input [`WORD_ADDR_MSB:0]m3_addr,
+    input[3:0]addrstr,
+    input[3:0]m_rw,
+
+    input[7:0]s_rdy,
+    input[`WORD_MSB:0]s0_rd_data,
+    input[`WORD_MSB:0]s1_rd_data,
+    input[`WORD_MSB:0]s2_rd_data,
+    input[`WORD_MSB:0]s3_rd_data,
+    input[`WORD_MSB:0]s4_rd_data,
+    input[`WORD_MSB:0]s5_rd_data,
+    input[`WORD_MSB:0]s6_rd_data,
+    input[`WORD_MSB:0]s7_rd_data,
+
+    output [`WORD_MSB:0]m_rd_data,
+    output m_rdy,
+    output[3:0]grnt,
+
+    output[7:0]s_chip,
+    output[`WORD_ADDR_MSB:0] s_addr,	   // ?�A?�h?�?�?�X
+    output s_as_,	   // ?�A?�h?�?�?�X?�X?�g?�?�?�[?�u
+    output s_rw,	   // ?�ǂ݁^?�?�?�?�
+    output [`WORD_MSB:0]s_wr_data
+    );
+
+    /********** ?�o?�X?�A?�[?�r?�^ **********/
+    bus_arbiter bus_arbiter (
+  		.clk		(clk),
+  		.rst		(rst),
+  		.req(req),
+  		.grnt(grnt)
+  	);
+
+
+    /********** ?�o?�X?�}?�X?�^?�}?�?�?�`?�v?�?�?�N?�T **********/
+    bus_master_mux bus_master_mux (
+      /********** ?�o?�X?�}?�X?�^?�M?�?� **********/
+      .grnt(grnt),
+      .m_as(m_as),
+      .m0_addr	(m0_addr),	  // ?�A?�h?�?�?�X
+      .m0_data (m0_rw_data), // ?�?�?�?�?�?�?�݃f?�[?�^
+      .m1_addr	(m1_addr),	  // ?�A?�h?�?�?�X
+      .m1_data (m1_rw_data), // ?�?�?�?�?�?�?�݃f?�[?�^
+      .m2_addr	(m2_addr),	  // ?�A?�h?�?�?�X
+      .m2_data (m2_rw_data), // ?�?�?�?�?�?�?�݃f?�[?�^
+      .m3_addr	(m3_addr),	  // ?�A?�h?�?�?�X
+      .m3_data (m3_rw_data), // ?�?�?�?�?�?�?�݃f?�[?�^
+
+      .s_addr		(s_addr),	  // ?�A?�h?�?�?�X
+      .s_as		(s_as),	  // ?�A?�h?�?�?�X?�X?�g?�?�?�[?�u
+      .s_rw		(s_rw),		  // ?�ǂ݁^?�?�?�?�
+      .s_wr_data	(s_wr_data)	  // ?�?�?�?�?�?�?�݃f?�[?�^
+    );
+
+    /********** ?�A?�h?�?�?�X?�f?�R?�[?�_ **********/
+    bus_addr_decoder bus_addr_decoder (
+      /********** ?�A?�h?�?�?�X **********/
+      .s_addr		(s_addr),	  // ?�A?�h?�?�?�X
+      .s_cs   (s_chip)
+    );
+
+    /********** ?�o?�X?�X?�?�?�[?�u?�}?�?�?�`?�v?�?�?�N?�T **********/
+    bus_slave_mux bus_slave_mux (
+      .s_cs	(s_chip),	  // ?�o?�X?�X?�?�?�[?�u0?�?�
+      .s_rdy	(s_rdy),	  // ?�?�?�f?�B
+
+      /********** ?�o?�X?�X?�?�?�[?�u?�M?�?� **********/
+      // ?�o?�X?�X?�?�?�[?�u0?�?�
+      .s0_data (s0_rd_data), // ?�ǂݏo?�?�?�f?�[?�^
+      .s1_data (s1_rd_data), // ?�ǂݏo?�?�?�f?�[?�^
+      .s2_data (s2_rd_data), // ?�ǂݏo?�?�?�f?�[?�^
+      .s3_data (s3_rd_data), // ?�ǂݏo?�?�?�f?�[?�^
+      .s4_data (s4_rd_data), // ?�ǂݏo?�?�?�f?�[?�^
+      .s5_data (s5_rd_data), // ?�ǂݏo?�?�?�f?�[?�^
+      .s6_data (s6_rd_data), // ?�ǂݏo?�?�?�f?�[?�^
+      .s7_data (s7_rd_data), // ?�ǂݏo?�?�?�f?�[?�^
+      /********** ?�o?�X?�}?�X?�^?�?�?�ʐM?�?� **********/
+      .m_data	(m_rd_data),  // ?�ǂݏo?�?�?�f?�[?�^
+      .m_rdy		(m_rdy)	  // ?�?�?�f?�B
+    );
+
 endmodule
