@@ -37,28 +37,113 @@
 `define WORD_ADDR_MSB `WORD_ADDR_W-1
 module mem_ctrl (
   input ex_en,
-  input ex_mem_op,
-  input ex_mem_wr_data,
-  input ex_out,
-  input rd_data,
-  output reg addr,
+  input [1:0]ex_mem_op,
+  input [`WORD_MSB:0]ex_mem_wr_data,
+  input [`WORD_MSB:0]ex_out,
+  input [`WORD_MSB:0]rd_data,
+  output reg [`WORD_ADDR_MSB:0]addr,
   output reg as_,
   output reg rw,
-  output reg wr_data,
-  output reg out,
+  output reg [`WORD_MSB:0]wr_data,
+  output reg [`WORD_MSB:0]out,
   output reg miss_align
   );
-  wire offset[1:0];
+  wire [1:0]offset;
 
   always @ ( * ) begin
-    if(ex_en)begin
+    addr=0;
+    as_=0;
+    rw=0;
+    wr_data=0;
+    out=0;
+    miss_align=0;
+    if(ex_en && ex_mem_op==1)begin //load
+      if(offset==2'b00)begin
+        out=rd_data;
+        as_=1;
+      end
+      else begin miss_align=1;end
+    end
+    else if(ex_en&&ex_mem_op==2)begin//store
+      if(offset==0)begin
+          rw=1;
+          as_=1;
+      end
+      else miss_align=1;
+    end
+    else out=ex_out;
+  end
+endmodule //mem_ctrl
 
+module mem_reg(
+  input clk,
+  input rst,
+  input out,
+  input [`WORD_MSB:0]miss_align,
+  input stall,
+  input flush,
+  input [`WORD_ADDR_MSB:0]ex_pc,
+  input ex_en,
+  input ex_br_flag,
+  input [1:0]ex_ctrl_op,
+  input [4:0]ex_dst_addr,
+  input ex_gpr_we_,
+  input [3:0]ex_exp_code,
+
+  output reg[`WORD_ADDR_MSB:0]mem_pc,
+  output reg mem_en,
+  output reg mem_br_flag,
+  output reg [1:0]mem_ctrl_op,
+  output reg [4:0]mem_dst_addr,
+  output reg mem_gpr_we_,
+  output reg [2:0]mem_exp_code,
+  output reg[`WORD_MSB:0]mem_out
+  );
+  always @ (posedge clk or negedge rst) begin
+    if(~rst)begin
+      mem_pc<=0;
+      mem_en<=0;
+      mem_br_flag<=0;
+      mem_ctrl_op<=0;
+      mem_dst_addr<=0;
+      mem_gpr_we_<=0;
+      mem_out<=0;
+    end
+    else begin
+      if(~stall)begin
+        if(flush)begin
+          mem_pc<=0;
+          mem_en<=0;
+          mem_br_flag<=0;
+          mem_ctrl_op<=0;
+          mem_dst_addr<=0;
+          mem_gpr_we_<=0;
+          mem_out<=0;
+        end
+        else if(miss_align)begin
+          mem_pc<=ex_pc;
+          mem_en<=ex_en;
+          mem_br_flag<=ex_br_flag;
+          mem_ctrl_op<=4;//miss_align
+          mem_dst_addr<=0;
+          mem_gpr_we_<=0;
+          mem_out<=0;
+        end
+        else if(miss_align)begin
+          mem_pc<=ex_pc;
+          mem_en<=ex_en;
+          mem_br_flag<=ex_br_flag;
+          mem_ctrl_op<=ex_ctrl_op;
+          mem_dst_addr<=ex_dst_addr;
+          mem_gpr_we_<=ex_gpr_we_;
+          mem_out<=out;
+        end
+      end
     end
   end
+endmodule
 
-
-endmodule //mem_ctrl
-module mem_stage (
+module stage_MEM (
 	/********** �N���b�N & ���Z�b�g **********/
 	input  wire				   clk,			   // �N���b�N
 	input  wire				   reset,		   // �񓯊����Z�b�g
