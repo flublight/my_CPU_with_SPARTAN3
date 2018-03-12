@@ -21,15 +21,13 @@
 
 
 `define WORD 32  // 1word
-`define WORD_ADDR_W 5  // address width 1word
-
 `define WORD_MSB `WORD-1
-`define WORD_ADDR_MSB `WORD_ADDR_W-1
+`define GPR_ADDR_MSB 5-1
 module GPregistor(
     input clk,
     input rst,
-    input [`WORD_ADDR_MSB:0]rd_addr_0,
-    input [`WORD_ADDR_MSB:0]rd_addr_1,
+    input [`GPR_ADDR_MSB:0]rd_addr_0,
+    input [`GPR_ADDR_MSB:0]rd_addr_1,
     output [`WORD_MSB:0]rd_data_0,
     output [`WORD_MSB:0]rd_data_1,
     input we,
