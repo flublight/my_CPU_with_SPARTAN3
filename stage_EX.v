@@ -30,37 +30,37 @@
 
 
 module reg_EX (
-input  wire				   clk,			   // ï¿½Nï¿½ï¿½ï¿½bï¿½N
-input  wire				   rst,		   // ï¿½ñ“¯Šï¿½ï¿½ï¿½ï¿½Zï¿½bï¿½g
-/********** ï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Mï¿½ï¿½ **********/
-input  wire				   stall,		   // ï¿½Xï¿½gï¿½[ï¿½ï¿½
-input  wire				   flush,		   // ï¿½tï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½
-input  wire				   int_detect,	   // ï¿½ï¿½ï¿½èï¿½İŒï¿½ï¿½o
-/********** ï¿½tï¿½Hï¿½ï¿½ï¿½[ï¿½fï¿½Bï¿½ï¿½ï¿½O **********/
-output wire [`WORD_MSB:0] fwd_data,	   // ï¿½tï¿½Hï¿½ï¿½ï¿½[ï¿½fï¿½Bï¿½ï¿½ï¿½Oï¿½fï¿½[ï¿½^
-/********** ID/EXï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½Xï¿½^ **********/
-input  wire [`WORD_ADDR_MSB:0] id_pc,		   // ï¿½vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½^
-input  wire				   id_en,		   // ï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½Ì—Lï¿½ï¿½
-input  wire [3:0]	   alu_of,	   // ALUï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-input  wire [`WORD_MSB:0] alu_out,	   // ALUï¿½ï¿½ï¿½ï¿½ 0
-input  wire				   id_br_flag,	   // ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O
-input  wire [1:0]	   id_mem_op,	   // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-input  wire [`WORD_MSB:0] id_mem_wr_data, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İƒfï¿½[ï¿½^
-input  wire [1:0]   id_ctrl_op,	   // ï¿½ï¿½ï¿½äƒŒï¿½Wï¿½Xï¿½^ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-input  wire [`RegAddrBus]  id_dst_addr,	   // ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İƒAï¿½hï¿½ï¿½ï¿½X
-input  wire				   id_gpr_we_,	   // ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ—Lï¿½ï¿½
-input  wire [2:0]   id_exp_code,	   // ï¿½ï¿½ï¿½Oï¿½Rï¿½[ï¿½h
-/********** EX/MEMï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½Xï¿½^ **********/
-output reg [`WORD_ADDR_MSB:0] ex_pc,		   // ï¿½vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½^
-output reg				   ex_en,		   // ï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½Ì—Lï¿½ï¿½
-output reg				   ex_br_flag,	   // ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O
-output reg [1:0]	   ex_mem_op,	   // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-output reg [`WORD_MSB:0] ex_mem_wr_data, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İƒfï¿½[ï¿½^
-output reg [1:0]   ex_ctrl_op,	   // ï¿½ï¿½ï¿½äƒŒï¿½Wï¿½Xï¿½^ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-output reg [`RegAddrBus]  ex_dst_addr,	   // ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İƒAï¿½hï¿½ï¿½ï¿½X
-output reg				   ex_gpr_we_,	   // ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ—Lï¿½ï¿½
-output reg [2:0]   ex_exp_code,	   // ï¿½ï¿½ï¿½Oï¿½Rï¿½[ï¿½h
-output reg [`WORD_MSB:0] ex_out		   // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+input  wire				   clk,			   // ?½N?½?½?½b?½N
+input  wire				   rst,		   // ?½ñ“¯Šï¿½?½?½?½Z?½b?½g
+/********** ?½p?½C?½v?½?½?½C?½?½?½?½?½?½?½M?½?½ **********/
+input  wire				   stall,		   // ?½X?½g?½[?½?½
+input  wire				   flush,		   // ?½t?½?½?½b?½V?½?½
+input  wire				   int_detect,	   // ?½?½?½èï¿½İŒï¿½?½o
+/********** ?½t?½H?½?½?½[?½f?½B?½?½?½O **********/
+output wire [`WORD_MSB:0] fwd_data,	   // ?½t?½H?½?½?½[?½f?½B?½?½?½O?½f?½[?½^
+/********** ID/EX?½p?½C?½v?½?½?½C?½?½?½?½?½W?½X?½^ **********/
+input  wire [`WORD_ADDR_MSB:0] id_pc,		   // ?½v?½?½?½O?½?½?½?½?½J?½E?½?½?½^
+input  wire				   id_en,		   // ?½p?½C?½v?½?½?½C?½?½?½f?½[?½^?½Ì—L?½?½
+input  wire [3:0]	   alu_of,	   // ALU?½I?½y?½?½?½[?½V?½?½?½?½
+input  wire [`WORD_MSB:0] alu_out,	   // ALU?½?½?½?½ 0
+input  wire				   id_br_flag,	   // ?½?½?½?½?½t?½?½?½O
+input  wire [1:0]	   id_mem_op,	   // ?½?½?½?½?½?½?½I?½y?½?½?½[?½V?½?½?½?½
+input  wire [`WORD_MSB:0] id_mem_wr_data, // ?½?½?½?½?½?½?½?½?½?½?½?½?½İƒf?½[?½^
+input  wire [1:0]   id_ctrl_op,	   // ?½?½?½äƒŒï¿½W?½X?½^?½I?½y?½?½?½[?½V?½?½?½?½
+input  wire [`RegAddrBus]  id_dst_addr,	   // ?½Ä—p?½?½?½W?½X?½^?½?½?½?½?½?½?½İƒA?½h?½?½?½X
+input  wire				   id_gpr_we_,	   // ?½Ä—p?½?½?½W?½X?½^?½?½?½?½?½?½?½İ—L?½?½
+input  wire [2:0]   id_exp_code,	   // ?½?½?½O?½R?½[?½h
+/********** EX/MEM?½p?½C?½v?½?½?½C?½?½?½?½?½W?½X?½^ **********/
+output reg [`WORD_ADDR_MSB:0] ex_pc,		   // ?½v?½?½?½O?½?½?½?½?½J?½E?½?½?½^
+output reg				   ex_en,		   // ?½p?½C?½v?½?½?½C?½?½?½f?½[?½^?½Ì—L?½?½
+output reg				   ex_br_flag,	   // ?½?½?½?½?½t?½?½?½O
+output reg [1:0]	   ex_mem_op,	   // ?½?½?½?½?½?½?½I?½y?½?½?½[?½V?½?½?½?½
+output reg [`WORD_MSB:0] ex_mem_wr_data, // ?½?½?½?½?½?½?½?½?½?½?½?½?½İƒf?½[?½^
+output reg [1:0]   ex_ctrl_op,	   // ?½?½?½äƒŒï¿½W?½X?½^?½I?½y?½?½?½[?½V?½?½?½?½
+output reg [`RegAddrBus]  ex_dst_addr,	   // ?½Ä—p?½?½?½W?½X?½^?½?½?½?½?½?½?½İƒA?½h?½?½?½X
+output reg				   ex_gpr_we_,	   // ?½Ä—p?½?½?½W?½X?½^?½?½?½?½?½?½?½İ—L?½?½
+output reg [2:0]   ex_exp_code,	   // ?½?½?½O?½R?½[?½h
+output reg [`WORD_MSB:0] ex_out		   // ?½?½?½?½?½?½?½?½
 );
 
 
@@ -135,85 +135,85 @@ endmodule //reg_EX
 
 module stage_EX(
 
-  	/********** ï¿½Nï¿½ï¿½ï¿½bï¿½N & ï¿½ï¿½ï¿½Zï¿½bï¿½g **********/
-  	input  wire				   clk,			   // ï¿½Nï¿½ï¿½ï¿½bï¿½N
-  	input  wire				   reset,		   // ï¿½ñ“¯Šï¿½ï¿½ï¿½ï¿½Zï¿½bï¿½g
-  	/********** ï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Mï¿½ï¿½ **********/
-  	input  wire				   stall,		   // ï¿½Xï¿½gï¿½[ï¿½ï¿½
-  	input  wire				   flush,		   // ï¿½tï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½
-  	input  wire				   int_detect,	   // ï¿½ï¿½ï¿½èï¿½İŒï¿½ï¿½o
+  	/********** ?½N?½?½?½b?½N & ?½?½?½Z?½b?½g **********/
+  	input  wire				   clk,			   // ?½N?½?½?½b?½N
+  	input  wire				   reset,		   // ?½ñ“¯Šï¿½?½?½?½Z?½b?½g
+  	/********** ?½p?½C?½v?½?½?½C?½?½?½?½?½?½?½M?½?½ **********/
+  	input  wire				   stall,		   // ?½X?½g?½[?½?½
+  	input  wire				   flush,		   // ?½t?½?½?½b?½V?½?½
+  	input  wire				   int_detect,	   // ?½?½?½èï¿½İŒï¿½?½o
 
-  	input  wire [`WORD_ADDR_MSB:0] id_pc,		   // ï¿½vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½^
-  	input  wire				   id_en,		   // ï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½Ì—Lï¿½ï¿½
-  	input  wire				   id_br_flag,	   // ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O
-  	input  wire [1:0]	   id_mem_op,	   // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-  	input  wire [`WORD_MSB:0] id_mem_wr_data, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İƒfï¿½[ï¿½^
-  	input  wire [1:0]   id_ctrl_op,	   // ï¿½ï¿½ï¿½äƒŒï¿½Wï¿½Xï¿½^ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-  	input  wire [`RegAddrBus]  id_dst_addr,	   // ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İƒAï¿½hï¿½ï¿½ï¿½X
-  	input  wire				   id_gpr_we_,	   // ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ—Lï¿½ï¿½
-  	input  wire [2:0]   id_exp_code,	   // ï¿½ï¿½ï¿½Oï¿½Rï¿½[ï¿½h
-  	/********** EX/MEMï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½Xï¿½^ **********/
-  	output reg [`WORD_ADDR_MSB:0] ex_pc,		   // ï¿½vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½^
-  	output reg				   ex_en,		   // ï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½Ì—Lï¿½ï¿½
-  	output reg				   ex_br_flag,	   // ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O
-  	output reg [1:0]	   ex_mem_op,	   // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-  	output reg [`WORD_MSB:0] ex_mem_wr_data, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İƒfï¿½[ï¿½^
-  	output reg [1:0]   ex_ctrl_op,	   // ï¿½ï¿½ï¿½äƒŒï¿½Wï¿½Xï¿½^ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-  	output reg [`RegAddrBus]  ex_dst_addr,	   // ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İƒAï¿½hï¿½ï¿½ï¿½X
-  	output reg				   ex_gpr_we_,	   // ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ—Lï¿½ï¿½
-  	output reg [2:0]   ex_exp_code,	   // ï¿½ï¿½ï¿½Oï¿½Rï¿½[ï¿½h
-  	output reg [`WORD_MSB:0] ex_out		   // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  	input  wire [`WORD_ADDR_MSB:0] id_pc,		   // ?½v?½?½?½O?½?½?½?½?½J?½E?½?½?½^
+  	input  wire				   id_en,		   // ?½p?½C?½v?½?½?½C?½?½?½f?½[?½^?½Ì—L?½?½
+  	input  wire				   id_br_flag,	   // ?½?½?½?½?½t?½?½?½O
+  	input  wire [1:0]	   id_mem_op,	   // ?½?½?½?½?½?½?½I?½y?½?½?½[?½V?½?½?½?½
+  	input  wire [`WORD_MSB:0] id_mem_wr_data, // ?½?½?½?½?½?½?½?½?½?½?½?½?½İƒf?½[?½^
+  	input  wire [1:0]   id_ctrl_op,	   // ?½?½?½äƒŒï¿½W?½X?½^?½I?½y?½?½?½[?½V?½?½?½?½
+  	input  wire [`RegAddrBus]  id_dst_addr,	   // ?½Ä—p?½?½?½W?½X?½^?½?½?½?½?½?½?½İƒA?½h?½?½?½X
+  	input  wire				   id_gpr_we_,	   // ?½Ä—p?½?½?½W?½X?½^?½?½?½?½?½?½?½İ—L?½?½
+  	input  wire [2:0]   id_exp_code,	   // ?½?½?½O?½R?½[?½h
+  	/********** EX/MEM?½p?½C?½v?½?½?½C?½?½?½?½?½W?½X?½^ **********/
+  	output reg [`WORD_ADDR_MSB:0] ex_pc,		   // ?½v?½?½?½O?½?½?½?½?½J?½E?½?½?½^
+  	output reg				   ex_en,		   // ?½p?½C?½v?½?½?½C?½?½?½f?½[?½^?½Ì—L?½?½
+  	output reg				   ex_br_flag,	   // ?½?½?½?½?½t?½?½?½O
+  	output reg [1:0]	   ex_mem_op,	   // ?½?½?½?½?½?½?½I?½y?½?½?½[?½V?½?½?½?½
+  	output reg [`WORD_MSB:0] ex_mem_wr_data, // ?½?½?½?½?½?½?½?½?½?½?½?½?½İƒf?½[?½^
+  	output reg [1:0]   ex_ctrl_op,	   // ?½?½?½äƒŒï¿½W?½X?½^?½I?½y?½?½?½[?½V?½?½?½?½
+  	output reg [`RegAddrBus]  ex_dst_addr,	   // ?½Ä—p?½?½?½W?½X?½^?½?½?½?½?½?½?½İƒA?½h?½?½?½X
+  	output reg				   ex_gpr_we_,	   // ?½Ä—p?½?½?½W?½X?½^?½?½?½?½?½?½?½İ—L?½?½
+  	output reg [2:0]   ex_exp_code,	   // ?½?½?½O?½R?½[?½h
+  	output reg [`WORD_MSB:0] ex_out		   // ?½?½?½?½?½?½?½?½
   );
 
-  	/********** ALUï¿½Ìoï¿½ï¿½ **********/
-  	wire [`WORD_MSB:0]		   alu_out;		   // ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½ï¿½
-  	wire					   alu_of;		   // ï¿½Iï¿½[ï¿½oï¿½tï¿½ï¿½ï¿½[
+  	/********** ALU?½Ìo?½?½ **********/
+  	wire [`WORD_MSB:0]		   alu_out;		   // ?½?½?½Z?½?½?½?½
+  	wire					   alu_of;		   // ?½I?½[?½o?½t?½?½?½[
 
-  	/********** ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½Ê‚Ìƒtï¿½Hï¿½ï¿½ï¿½[ï¿½fï¿½Bï¿½ï¿½ï¿½O **********/
+  	/********** ?½?½?½Z?½?½?½Ê‚Ìƒt?½H?½?½?½[?½f?½B?½?½?½O **********/
   	assign fwd_data = alu_out;
 
   	/********** ALU **********/
-  	alu alu (
-  		.in_0			(id_alu_in_0),	  // ï¿½ï¿½ï¿½ï¿½ 0
-  		.in_1			(id_alu_in_1),	  // ï¿½ï¿½ï¿½ï¿½ 1
-  		.op				(id_alu_op),	  // ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-  		.out			(alu_out),		  // ï¿½oï¿½ï¿½
-  		.of				(alu_of)		  // ï¿½Iï¿½[ï¿½oï¿½tï¿½ï¿½ï¿½[
+  	ALU alu (
+  		.in_0			(id_alu_in_0),	  // ?½?½?½?½ 0
+  		.in_1			(id_alu_in_1),	  // ?½?½?½?½ 1
+  		.op				(id_alu_op),	  // ?½I?½y?½?½?½[?½V?½?½?½?½
+  		.out			(alu_out),		  // ?½o?½?½
+  		.of				(alu_of)		  // ?½I?½[?½o?½t?½?½?½[
   	);
 
-  	/********** ï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½Xï¿½^ **********/
-  	ex_reg ex_reg (
-  		/********** ï¿½Nï¿½ï¿½ï¿½bï¿½N & ï¿½ï¿½ï¿½Zï¿½bï¿½g **********/
-  		.clk			(clk),			  // ï¿½Nï¿½ï¿½ï¿½bï¿½N
-  		.rst			(reset),		  // ï¿½ñ“¯Šï¿½ï¿½ï¿½ï¿½Zï¿½bï¿½g
-  		/********** ALUï¿½Ìoï¿½ï¿½ **********/
-  		.alu_out		(alu_out),		  // ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½ï¿½
-  		.alu_of			(alu_of),		  // ï¿½Iï¿½[ï¿½oï¿½tï¿½ï¿½ï¿½[
-  		/********** ï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Mï¿½ï¿½ **********/
-  		.stall			(stall),		  // ï¿½Xï¿½gï¿½[ï¿½ï¿½
-  		.flush			(flush),		  // ï¿½tï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½
-  		.int_detect		(int_detect),	  // ï¿½ï¿½ï¿½èï¿½İŒï¿½ï¿½o
-  		/********** ID/EXï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½Xï¿½^ **********/
-  		.id_pc			(id_pc),		  // ï¿½vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½^
-  		.id_en			(id_en),		  // ï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½Ì—Lï¿½ï¿½
-  		.id_br_flag		(id_br_flag),	  // ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O
-  		.id_mem_op		(id_mem_op),	  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-  		.id_mem_wr_data (id_mem_wr_data), // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İƒfï¿½[ï¿½^
-  		.id_ctrl_op		(id_ctrl_op),	  // ï¿½ï¿½ï¿½äƒŒï¿½Wï¿½Xï¿½^ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-  		.id_dst_addr	(id_dst_addr),	  // ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İƒAï¿½hï¿½ï¿½ï¿½X
-  		.id_gpr_we_		(id_gpr_we_),	  // ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ—Lï¿½ï¿½
-  		.id_exp_code	(id_exp_code),	  // ï¿½ï¿½ï¿½Oï¿½Rï¿½[ï¿½h
-  		/********** EX/MEMï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½Xï¿½^ **********/
-  		.ex_pc			(ex_pc),		  // ï¿½vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½^
-  		.ex_en			(ex_en),		  // ï¿½pï¿½Cï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½Ì—Lï¿½ï¿½
-  		.ex_br_flag		(ex_br_flag),	  // ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O
-  		.ex_mem_op		(ex_mem_op),	  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-  		.ex_mem_wr_data (ex_mem_wr_data), // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İƒfï¿½[ï¿½^
-  		.ex_ctrl_op		(ex_ctrl_op),	  // ï¿½ï¿½ï¿½äƒŒï¿½Wï¿½Xï¿½^ï¿½Iï¿½yï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
-  		.ex_dst_addr	(ex_dst_addr),	  // ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İƒAï¿½hï¿½ï¿½ï¿½X
-  		.ex_gpr_we_		(ex_gpr_we_),	  // ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ—Lï¿½ï¿½
-  		.ex_exp_code	(ex_exp_code),	  // ï¿½ï¿½ï¿½Oï¿½Rï¿½[ï¿½h
-  		.ex_out			(ex_out)		  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  	/********** ?½p?½C?½v?½?½?½C?½?½?½?½?½W?½X?½^ **********/
+  	reg_EX ex_reg (
+  		/********** ?½N?½?½?½b?½N & ?½?½?½Z?½b?½g **********/
+  		.clk			(clk),			  // ?½N?½?½?½b?½N
+  		.rst			(reset),		  // ?½ñ“¯Šï¿½?½?½?½Z?½b?½g
+  		/********** ALU?½Ìo?½?½ **********/
+  		.alu_out		(alu_out),		  // ?½?½?½Z?½?½?½?½
+  		.alu_of			(alu_of),		  // ?½I?½[?½o?½t?½?½?½[
+  		/********** ?½p?½C?½v?½?½?½C?½?½?½?½?½?½?½M?½?½ **********/
+  		.stall			(stall),		  // ?½X?½g?½[?½?½
+  		.flush			(flush),		  // ?½t?½?½?½b?½V?½?½
+  		.int_detect		(int_detect),	  // ?½?½?½èï¿½İŒï¿½?½o
+  		/********** ID/EX?½p?½C?½v?½?½?½C?½?½?½?½?½W?½X?½^ **********/
+  		.id_pc			(id_pc),		  // ?½v?½?½?½O?½?½?½?½?½J?½E?½?½?½^
+  		.id_en			(id_en),		  // ?½p?½C?½v?½?½?½C?½?½?½f?½[?½^?½Ì—L?½?½
+  		.id_br_flag		(id_br_flag),	  // ?½?½?½?½?½t?½?½?½O
+  		.id_mem_op		(id_mem_op),	  // ?½?½?½?½?½?½?½I?½y?½?½?½[?½V?½?½?½?½
+  		.id_mem_wr_data (id_mem_wr_data), // ?½?½?½?½?½?½?½?½?½?½?½?½?½İƒf?½[?½^
+  		.id_ctrl_op		(id_ctrl_op),	  // ?½?½?½äƒŒï¿½W?½X?½^?½I?½y?½?½?½[?½V?½?½?½?½
+  		.id_dst_addr	(id_dst_addr),	  // ?½Ä—p?½?½?½W?½X?½^?½?½?½?½?½?½?½İƒA?½h?½?½?½X
+  		.id_gpr_we_		(id_gpr_we_),	  // ?½Ä—p?½?½?½W?½X?½^?½?½?½?½?½?½?½İ—L?½?½
+  		.id_exp_code	(id_exp_code),	  // ?½?½?½O?½R?½[?½h
+  		/********** EX/MEM?½p?½C?½v?½?½?½C?½?½?½?½?½W?½X?½^ **********/
+  		.ex_pc			(ex_pc),		  // ?½v?½?½?½O?½?½?½?½?½J?½E?½?½?½^
+  		.ex_en			(ex_en),		  // ?½p?½C?½v?½?½?½C?½?½?½f?½[?½^?½Ì—L?½?½
+  		.ex_br_flag		(ex_br_flag),	  // ?½?½?½?½?½t?½?½?½O
+  		.ex_mem_op		(ex_mem_op),	  // ?½?½?½?½?½?½?½I?½y?½?½?½[?½V?½?½?½?½
+  		.ex_mem_wr_data (ex_mem_wr_data), // ?½?½?½?½?½?½?½?½?½?½?½?½?½İƒf?½[?½^
+  		.ex_ctrl_op		(ex_ctrl_op),	  // ?½?½?½äƒŒï¿½W?½X?½^?½I?½y?½?½?½[?½V?½?½?½?½
+  		.ex_dst_addr	(ex_dst_addr),	  // ?½Ä—p?½?½?½W?½X?½^?½?½?½?½?½?½?½İƒA?½h?½?½?½X
+  		.ex_gpr_we_		(ex_gpr_we_),	  // ?½Ä—p?½?½?½W?½X?½^?½?½?½?½?½?½?½İ—L?½?½
+  		.ex_exp_code	(ex_exp_code),	  // ?½?½?½O?½R?½[?½h
+  		.ex_out			(ex_out)		  // ?½?½?½?½?½?½?½?½
   	);
 
 endmodule
