@@ -24,24 +24,23 @@
 
 `define WORD_MSB `WORD-1
 `define WORD_ADDR_MSB `WORD_ADDR_W-1
-/********** アドレスマップ **********/
-`define CREG_ADDR_STATUS	 5'h0  // ステータス
-`define CREG_ADDR_PRE_STATUS 5'h1  // 前のステータス
-`define CREG_ADDR_PC		 5'h2  // プログラムカウンタ
-`define CREG_ADDR_EPC		 5'h3  // 例外プログラムカウンタ
-`define CREG_ADDR_EXP_VECTOR 5'h4  // 例外ベクタ
-`define CREG_ADDR_CAUSE		 5'h5  // 例外原因レジスタ
+/********** アドレスマッ?�?�?**********/
+`define CREG_ADDR_STATUS	 5'h0  // ス?�?�??タス
+`define CREG_ADDR_PRE_STATUS 5'h1  // 前�?ス?�?�??タス
+`define CREG_ADDR_PC		 5'h2  // プログラ?�?�??�?�ウンタ
+`define CREG_ADDR_EPC		 5'h3  // 例外�?ログラ?�?�??�?�ウンタ
+`define CREG_ADDR_EXP_VECTOR 5'h4  // 例外�?クタ
+`define CREG_ADDR_CAUSE		 5'h5  // 例外原?�?�??�?�ジスタ
 `define CREG_ADDR_INT_MASK	 5'h6  // 割り込みマスク
-`define CREG_ADDR_IRQ		 5'h7  // 割り込み要求
-// 読み出し専用領域
+`define CREG_ADDR_IRQ		 5'h7  // 割り込み�?��?�?// 読み出し専用領域
 `define CREG_ADDR_ROM_SIZE	 5'h1d // ROMサイズ
 `define CREG_ADDR_SPM_SIZE	 5'h1e // SPMサイズ
-`define CREG_ADDR_CPU_INFO	 5'h1f // CPU情報
-/********** ビットマップ **********/
-`define CregExeModeLoc		 0	   // 実行モードの位置
+`define CREG_ADDR_CPU_INFO	 5'h1f // CPU?�?�??
+/********** ビット�??�?�?? **********/
+`define CregExeModeLoc		 0	   // 実行モード�?位置
 `define CregIntEnableLoc	 1	   // 割り込み有効の位置
-`define CregExpCodeLoc		 2:0   // 例外コードの位置
-`define CregDlyFlagLoc		 3	   // ディレイスロットフラグの位置
+`define CregExpCodeLoc		 2:0   // 例外コード�?位置
+`define CregDlyFlagLoc		 3	   // ?�?�??�?�レイスロ?�?�??�?�フラグの位置
 
 module ctrl_cpu(
     input clk,
@@ -82,6 +81,7 @@ module ctrl_cpu(
     reg [`WORD_ADDR_MSB:0]epc,exp_vector,pre_pc;
     reg[2:0]exp_code;
     reg[7:0]mask;
+    wire aa=exp_code[3];
 
 
     wire stall=if_busy|mem_busy;
@@ -126,18 +126,17 @@ module ctrl_cpu(
     always @ ( * ) begin
       case(creg_rd_addr)
 
-      `CREG_ADDR_STATUS	    :creg_rd_data={{30'b0},int_en,exe_mode};// 現在のステータス
-      `CREG_ADDR_PRE_STATUS :creg_rd_data={{{30'b0},pre_int_en,pre_exe_mode}}; // 前のステータス
-      `CREG_ADDR_PC		      :creg_rd_data={id_pc,{2'b0}};// プログラムカウンタ
-      `CREG_ADDR_EPC		    :creg_rd_data={epc,0,0};// 例外プログラムカウンタ
-      `CREG_ADDR_EXP_VECTOR :creg_rd_data={{exp_vector,0,0}}; // 例外ベクタ
-      `CREG_ADDR_CAUSE		  :creg_rd_data={{28'b0},dly_flag,exp_code};// 例外原因レジスタ
+      `CREG_ADDR_STATUS	    :creg_rd_data={{30'b0},int_en,exe_mode};// 現在のス?�?�??タス
+      `CREG_ADDR_PRE_STATUS :creg_rd_data={{{30'b0},pre_int_en,pre_exe_mode}}; // 前�?ス?�?�??タス
+      `CREG_ADDR_PC		      :creg_rd_data={id_pc,{2'b0}};// プログラ?�?�??�?�ウンタ
+      `CREG_ADDR_EPC		    :creg_rd_data={epc,1'b0,1'b0};// 例外�?ログラ?�?�??�?�ウンタ
+      `CREG_ADDR_EXP_VECTOR :creg_rd_data={{exp_vector,1'b0,1'b0}}; // 例外�?クタ
+      `CREG_ADDR_CAUSE		  :creg_rd_data={{28'b0},dly_flag,exp_code};// 例外原?�?�??�?�ジスタ
       `CREG_ADDR_INT_MASK	  :creg_rd_data={{24'b0},mask};// 割り込みマスク
-      `CREG_ADDR_IRQ		    :creg_rd_data={{24'b0},irq};// 割り込み要求
-
+      `CREG_ADDR_IRQ		    :creg_rd_data={{24'b0},irq};// 割り込み�?��?�?
       `CREG_ADDR_ROM_SIZE	  :creg_rd_data=$unsigned(8192);// ROMサイズ
       `CREG_ADDR_SPM_SIZE	  :creg_rd_data=$unsigned(8192*2);// SPMサイズ
-      `CREG_ADDR_CPU_INFO	  :creg_rd_data=$unsigned(114514);// CPU情報
+      `CREG_ADDR_CPU_INFO	  :creg_rd_data=$unsigned(114514);// CPU?�?�??
       endcase
     end
 
@@ -175,22 +174,22 @@ module ctrl_cpu(
           else if(mem_ctrl_op==1)begin //write cntl reg
             case(mem_dst_addr)
             `CREG_ADDR_STATUS	    :begin
-              exe_mode=mem_out[0];// 現在のステータス
+              exe_mode=mem_out[0];// 現在のス?�?�??タス
               int_en=mem_out[1];
             end
             `CREG_ADDR_PRE_STATUS :begin
-              pre_exe_mode=mem_out[0];// 前のステータス
+              pre_exe_mode=mem_out[0];// 前�?ス?�?�??タス
               pre_int_en=mem_out[1];
             end
             `CREG_ADDR_EPC		    :begin
-              epc=mem_out[31:2];// 例外プログラムカウンタ
+              epc=mem_out[31:2];// 例外�?ログラ?�?�??�?�ウンタ
             end
             `CREG_ADDR_EXP_VECTOR :begin
-              exp_vector=mem_out[31:2];// 例外ベクタ
+              exp_vector=mem_out[31:2];// 例外�?クタ
             end
             `CREG_ADDR_CAUSE		  :begin
-              dly_flag=mem_out[3];// 例外原因レジスタ
-              exp_code=mem_out[2:0];// 例外原因レジスタ
+              dly_flag=mem_out[3];// 例外原?�?�??�?�ジスタ
+              exp_code=mem_out[2:0];// 例外原?�?�??�?�ジスタ
             end
             `CREG_ADDR_INT_MASK	  :begin
               mask=mem_out[7:0];// 割り込みマスク

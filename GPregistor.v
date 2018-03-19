@@ -31,7 +31,7 @@ module GPregistor(
     output [`WORD_MSB:0]rd_data_0,
     output [`WORD_MSB:0]rd_data_1,
     input we,
-    input [`WORD_MSB:0] wr_addr,
+    input [4:0] wr_addr,
     input [`WORD_MSB:0] wr_data
    );
    reg [`WORD_MSB:0] gpr[31:0];

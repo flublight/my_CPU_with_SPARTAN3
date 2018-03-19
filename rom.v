@@ -35,11 +35,13 @@ module rom(
     output[`WORD_MSB:0] data,
     output reg rdy
     );
+   /* 
     x_s3e_sprom x_s3e_sprom (
     		.clka  (clk),					// ?N???b?N
     		.addra (addr),					// ?A?h???X
     		.douta (data)				// ???o???f?[?^
-    	);        
+    	);
+    	*/        
     always@(posedge clk or negedge rst)begin
       if(~rst)begin
         rdy<=0;
