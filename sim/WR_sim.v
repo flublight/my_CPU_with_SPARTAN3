@@ -46,6 +46,9 @@ module WR_sim();
   reg [4:0]mem_dst_addr;
   reg mem_gpr_we_;
   reg [2:0]mem_exp_code;
+
+
+
   wire [`WORD_MSB:0]mem_out;
 
   reg if_busy;
@@ -106,9 +109,25 @@ module WR_sim();
     reset = 1;
 		#(2)
     reset <= 0;
+
 		repeat(2) @(posedge clk);
     reset <= 1;
+		mem_en<=0;
+		mem_br_flag=0;
+		mem_gpr_we_=0;
+		mem_exp_code=0;
+		if_busy=0;
+		ld_hazard=0;
+		mem_busy=0;
+
+		mem_ctrl_op=1;
+		mem_dst_addr=4;
+		id_pc=4;
+		mem_pc=8;
+		irq=0;
+		creg_rd_addr=0;
 		repeat(200) @(posedge clk);
+
     repeat(200) @(posedge clk);
 
     $finish;
