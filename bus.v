@@ -204,8 +204,6 @@ endmodule
 module bus(
     input clk,
     input rst,
-    input[3:0]req,
-    input[3:0]m_as,
     input [`WORD_MSB:0]m0_rw_data,
     input [`WORD_ADDR_MSB:0]m0_addr,
     input [`WORD_MSB:0]m1_rw_data,
@@ -214,10 +212,33 @@ module bus(
     input [`WORD_ADDR_MSB:0]m2_addr,
     input [`WORD_MSB:0]m3_rw_data,
     input [`WORD_ADDR_MSB:0]m3_addr,
-    input[3:0]addrstr,
-    input[3:0]m_rw,
 
-    input[7:0]s_rdy,
+    input m0_req_,
+    input m1_req_,
+    input m2_req_,
+    input m3_req_,
+    input m0_as_,
+    input m1_as_,
+    input m2_as_,
+    input m3_as_,
+    input m0_rw_,
+    input m1_rw_,
+    input m2_rw_,
+    input m3_rw_,
+    output m0_grnt_,
+    output m1_grnt_,
+    output m2_grnt_,
+    output m3_grnt_,
+
+    input s0_rdy_,
+    input s1_rdy_,
+    input s2_rdy_,
+    input s3_rdy_,
+    input s4_rdy_,
+    input s5_rdy_,
+    input s6_rdy_,
+    input s7_rdy_,
+
     input[`WORD_MSB:0]s0_rd_data,
     input[`WORD_MSB:0]s1_rd_data,
     input[`WORD_MSB:0]s2_rd_data,
@@ -229,14 +250,28 @@ module bus(
 
     output [`WORD_MSB:0]m_rd_data,
     output m_rdy,
-    output[3:0]grnt,
 
-    output[7:0]s_chip,
+    output s0_cs_,
+    output s1_cs_,
+    output s2_cs_,
+    output s3_cs_,
+    output s4_cs_,
+    output s5_cs_,
+    output s6_cs_,
+    output s7_cs_,
     output[`WORD_ADDR_MSB:0] s_addr,	   // ?�A?�h?�?�?�X
     output s_as_,	   // ?�A?�h?�?�?�X?�X?�g?�?�?�[?�u
     output s_rw,	   // ?�ǂ݁^?�?�?�?�
     output [`WORD_MSB:0]s_wr_data
     );
+
+    wire[3:0] req={m3_req_,m2_req_,m1_req_,m0_req_};
+    wire[3:0]m_as={m3_as_,m2_as_,m1_as_,m0_as_};
+    wire[3:0]m_rw={m3_rw,m2_rw,m1_rw,m0_rw};
+
+//ここなおす
+    wire[3:0]grnt;
+    wire[7:0]s_chip;
 
     /********** ?�o?�X?�A?�[?�r?�^ **********/
     bus_arbiter bus_arbiter (
@@ -262,7 +297,7 @@ module bus(
       .m3_data (m3_rw_data), // ?�?�?�?�?�?�?�݃f?�[?�^
 
       .s_addr		(s_addr),	  // ?�A?�h?�?�?�X
-      .s_as		(s_as),	  // ?�A?�h?�?�?�X?�X?�g?�?�?�[?�u
+      .s_as		(s_as_),	  // ?�A?�h?�?�?�X?�X?�g?�?�?�[?�u
       .s_rw		(s_rw),		  // ?�ǂ݁^?�?�?�?�
       .s_wr_data	(s_wr_data)	  // ?�?�?�?�?�?�?�݃f?�[?�^
     );

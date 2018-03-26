@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 2018/02/27 10:16:01
-// Design Name: 
+// Design Name:
 // Module Name: sim_top
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -40,10 +40,10 @@ module Sim;
 		Clk=~Clk; #(Clk_CYCLE/2);
 		end
   initial begin
-    Reset = 1;    
+    Reset = 1;
     btn=0;
 	#(Clk_CYCLE*1.5)
-		
+
     Reset <= 0;
 	repeat(2) @(posedge Clk);
     Reset <= 1;

@@ -1,4 +1,4 @@
-`timescale 100ps / 10ps
+`timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -21,8 +21,8 @@
 
 
 module uart_sim();
-parameter Clk_CYCLE = 10;
-reg Clk=0, Reset,cs,as,rw,addr,rx;
+parameter Clk_CYCLE = 4;
+reg Clk=0, Reset,cs,as,rw,addr,rx=1;
 reg [31:0] rd_data=0;
 wire[31:0] wr_data;
 wire rdy,irq_rx,irq_tx,tx;
@@ -59,23 +59,24 @@ uart uart(
     cs=1;as=1;
     rw=1;
     addr=1;
-    repeat(100) @(posedge Clk);
+    
+    repeat(500) @(posedge Clk);
     cs=1;as=1;
     rw=1;
     addr=1;
-    repeat(100) @(posedge Clk);
+    repeat(500) @(posedge Clk);
     cs=1;as=1;
     rw=0;
     addr=1;
-    repeat(100) @(posedge Clk);
+    repeat(500) @(posedge Clk);
     cs=1;as=1;
     rw=1;
     addr=0;
-    repeat(100) @(posedge Clk);
+    repeat(500) @(posedge Clk);
     cs=1;as=1;
     rw=0;
     addr=0;
-    repeat(100) @(posedge Clk);
+    repeat(1000) @(posedge Clk);
     $stop;
   end
 endmodule

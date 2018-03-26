@@ -36,6 +36,8 @@ endmodule
 module my_Peocessing_System_top(
   input INCLK,
   input RESET,
+  input UART_RX,
+  output UART_TX,
   input[3:0] BTN,
   output[1:0] LED,
   output[7:0] LED7SEG1,
@@ -48,6 +50,15 @@ wire RST=RESET|BTN[0];
 //clock generator
 wire sys_clk,sys_clk_,Chip_RST;
 CLK_gen generator(INCLK,RST,sys_clk,sys_clk_,Chip_RST);
+
+//processor
+processor processor(
+  sys_clk,
+  sys_clk_,
+  Chip_RST,
+  UART_RX,
+  UART_TX
+  )
 
 //counter test
 wire[6:0] cnt_sec;
@@ -69,8 +80,9 @@ always@(posedge INCLK or negedge RST)begin
     past_sec<=cnt_sec;
   end
 end
-wire [7:0]devidend={2'b00,cnt_sec};
-dev devFor7seg(8'b10110110,4'b1010,start,INCLK,RST,q_seg,r_seg);
+wire rfd;
+//dev devFor7seg(8'b10110110,4'b1010,start,INCLK,RST,q_seg,r_seg);
+div_gen_v3_0_0 devFor7seg(rfd,INCLK,cnt_sec,q_seg,4'b1010,r_seg);
 
 
 //7seg_decode

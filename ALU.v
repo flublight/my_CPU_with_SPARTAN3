@@ -79,7 +79,6 @@ always@(posedge clk) begin
       zr<=tmp;
     end
     else if(en_seq)zr <=zw;
-
 end
 
 endmodule
