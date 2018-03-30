@@ -269,9 +269,22 @@ module bus(
     wire[3:0]m_as={m3_as_,m2_as_,m1_as_,m0_as_};
     wire[3:0]m_rw={m3_rw,m2_rw,m1_rw,m0_rw};
 
-//ここなおす
     wire[3:0]grnt;
     wire[7:0]s_chip;
+    assign m0_grnt_=grant[0];
+    assign m1_grnt_=grant[1];
+    assign m2_grnt_=grant[2];
+    assign m3_grnt_=grant[3];
+    assign s0_cs_=s_chip[0];
+    assign s1_cs_=s_chip[1];
+    assign s2_cs_=s_chip[2];
+    assign s3_cs_=s_chip[3];
+    assign s4_cs_=s_chip[4];
+    assign s5_cs_=s_chip[5];
+    assign s6_cs_=s_chip[6];
+    assign s7_cs_=s_chip[7];
+
+
 
     /********** ?�o?�X?�A?�[?�r?�^ **********/
     bus_arbiter bus_arbiter (
